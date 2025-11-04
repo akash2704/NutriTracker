@@ -266,3 +266,42 @@ For support, email support@nutritracker.com or create an issue on GitHub.
 ---
 
 **Built with ❤️ for healthier living in India**
+
+## 🐳 Docker Deployment
+
+### Quick Start with Docker
+```bash
+# Clone and start all services
+git clone https://github.com/akash2704/NutriTracker.git
+cd NutriTracker
+./deploy.sh
+```
+
+**Access Points:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+
+### Manual Docker Commands
+```bash
+# Development environment
+docker-compose up --build
+
+# Production environment
+docker-compose -f docker-compose.prod.yml up --build
+
+# Stop services
+docker-compose down
+```
+
+### Render Deployment
+**Important**: Render's free tier doesn't support Docker Compose. Deploy services separately:
+
+1. **Backend**: Deploy as Web Service (connect GitHub repo, set build command: `cd backend && pip install -r requirements.txt`)
+2. **Frontend**: Deploy as Static Site (build command: `cd frontend && npm install && npm run build`)
+3. **Database**: Add PostgreSQL database service
+
+**Alternative platforms supporting Docker Compose:**
+- Railway (recommended for full-stack apps)
+- DigitalOcean App Platform
+- AWS ECS/Fargate
