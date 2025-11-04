@@ -2,22 +2,24 @@ import sys
 from os.path import abspath, dirname
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 from logging.config import fileConfig
 
 # --- FIX 1: ADD YOUR PROJECT TO PYTHON'S PATH ---
-# This adds your 'backend' folder to the list of places
-# Python looks for modules.
 sys.path.append(dirname(dirname(abspath(__file__))))
 # ------------------------------------------------
 
-from sqlalchemy import engine_from_config, create_engine # <-- Import create_engine
+from sqlalchemy import engine_from_config, create_engine
 from sqlalchemy import pool
 
 from alembic import context
 
 # --- FIX 2: LOAD .ENV AND IMPORT YOUR MODELS ---
-load_dotenv()
+# Construct the path to the .env file (one level up from 'alembic')
+dotenv_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=dotenv_path)
+
 from app.models import Base  # <-- Import your Base
 # -----------------------------------------------
 

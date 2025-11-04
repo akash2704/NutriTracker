@@ -1,7 +1,13 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
 
 # 1. Import the 'router' object from our new file
-from .routers import general
+from .routers import general, foods, users, auth, foodLog, dashboard, profile, recipe, recommendations # <-- This is correct
 
 # 2. Create the main FastAPI app instance
 app = FastAPI(
@@ -10,13 +16,27 @@ app = FastAPI(
     version="0.1.0"
 )
 
+origins = [
+    "http://localhost:5173",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # 3. "Include" the router
-# This tells the main 'app' to add all the routes
-# from the 'general.router' object.
 app.include_router(general.router)
-
+app.include_router(foods.router) 
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(foodLog.router)
+app.include_router(dashboard.router)
+app.include_router(profile.router)
+app.include_router(recipe.router)
+app.include_router(recommendations.router)
 # In the future, you will add more routers here:
-# from .routers import foods, users, auth
-# app.include_router(foods.router)
+# from .routers import users, auth
 # app.include_router(users.router)
 # app.include_router(auth.router)

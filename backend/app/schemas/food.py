@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional 
 
-#------------Food Category Schema ------
-
+#------------ Food Category Schema ------
 
 class FoodCategoryBase(BaseModel):
     name: str
@@ -13,12 +12,10 @@ class FoodCategoryCreate(FoodCategoryBase):
 class FoodCategory(FoodCategoryBase):
     id: int 
 
-    class Config :
-        orm_model=True 
+    class Config:
+        from_attributes = True  # Changed from orm_model=True
 
-
-#----------Food Schema --------------
-
+#---------- Food Schema --------------
 
 class FoodBase(BaseModel):
     name: str
@@ -29,9 +26,7 @@ class FoodCreate(FoodBase):
 class Food(FoodBase):
     id: int
     category_id: int
-
     category: FoodCategory
 
     class Config:
-        orm_model=True
-        
+        from_attributes = True  # Changed from orm_model=True

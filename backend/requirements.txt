@@ -14,3 +14,10 @@ pypdfium2==5.0.0
 python-dotenv==1.2.1
 sqlalchemy==2.0.44
 typing-extensions==4.15.0
+google-generativeai==0.8.3
+fastapi==0.115.6
+uvicorn==0.32.1
+python-multipart==0.0.17
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.1
