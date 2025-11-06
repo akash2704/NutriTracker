@@ -16,9 +16,7 @@ app = FastAPI(
     version="0.1.0"
 )
 
-origins = [
-    "http://localhost:5173",
-]
+origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -36,6 +34,14 @@ app.include_router(dashboard.router)
 app.include_router(profile.router)
 app.include_router(recipe.router)
 app.include_router(recommendations.router)
+# AWS Lambda handler (for serverless deployment)
+try:
+    from mangum import Mangum
+    handler = Mangum(app)
+except ImportError:
+    # mangum not installed, skip Lambda handler
+    pass
+
 # In the future, you will add more routers here:
 # from .routers import users, auth
 # app.include_router(users.router)
