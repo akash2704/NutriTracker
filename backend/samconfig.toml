@@ -1,0 +1,9 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "nutrition-tracker-api"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1234567890"
+s3_prefix = "nutrition-tracker-api"
+region = "ap-south-1"
+capabilities = "CAPABILITY_IAM"

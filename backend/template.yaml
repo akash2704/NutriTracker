@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  NutritionAPI:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: app.main.handler
+      Runtime: python3.12
+      Timeout: 30
+      Environment:
+        Variables:
+          DATABASE_URL: !Ref DatabaseURL
+          SECRET_KEY: !Ref SecretKey
+          ACCESS_TOKEN_EXPIRE_MINUTES: !Ref AccessTokenExpire
+          GEMINI_API_KEY: !Ref GeminiAPIKey
+          SMTP_SERVER: !Ref SMTPServer
+          SMTP_PORT: !Ref SMTPPort
+          SMTP_USERNAME: !Ref SMTPUsername
+          SMTP_PASSWORD: !Ref SMTPPassword
+          FROM_EMAIL: !Ref FromEmail
+          ALLOWED_ORIGINS: !Ref AllowedOrigins
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+Parameters:
+  DatabaseURL:
+    Type: String
+    NoEcho: true
+    Default: "postgresql://postgres:Aka!270402@nutritrack.c1imk48s0cj6.ap-south-1.rds.amazonaws.com:5432/nutritrack"
+  
+  SecretKey:
+    Type: String
+    NoEcho: true
+    Default: "7e7185bfe3bee98210ec1c60884a22ff4992ab8de3bba8097bd941f83341fafd"
+  
+  AccessTokenExpire:
+    Type: String
+    Default: "30"
+  
+  GeminiAPIKey:
+    Type: String
+    NoEcho: true
+    Default: "AIzaSyDRd2KVXlwzVr4XJvBxGUjpZ4RxKuPhF9c"
+  
+  SMTPServer:
+    Type: String
+    Default: "smtp.gmail.com"
+  
+  SMTPPort:
+    Type: String
+    Default: "587"
+  
+  SMTPUsername:
+    Type: String
+    Default: "akashkallai27@gmail.com"
+  
+  SMTPPassword:
+    Type: String
+    NoEcho: true
+    Default: "iycj qgcd wwxv lvrq"
+  
+  FromEmail:
+    Type: String
+    Default: "akashkallai27@gmail.com"
+  
+  AllowedOrigins:
+    Type: String
+    Default: "https://nutri-tracker-rust.vercel.app"
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
