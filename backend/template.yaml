@@ -27,6 +27,17 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+            RestApiId: !Ref ApiGatewayApi
+
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'https://nutri-tracker-rust.vercel.app'"
+        AllowCredentials: true
 
 Parameters:
   DatabaseURL:
@@ -75,4 +86,4 @@ Parameters:
 
 Outputs:
   ApiUrl:
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
