@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from dotenv import load_dotenv
 import os
 
@@ -15,6 +16,28 @@ app = FastAPI(
     description="API for the NIN-based Indian Nutrition Tracker",
     version="0.1.0"
 )
+
+# Custom OpenAPI schema to fix API Gateway paths
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    openapi_schema = get_openapi(
+        title="Nutrition Tracker API",
+        version="0.1.0",
+        description="API for the NIN-based Indian Nutrition Tracker",
+        routes=app.routes,
+    )
+    
+    # Fix server URLs for API Gateway
+    openapi_schema["servers"] = [
+        {"url": "https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod"}
+    ]
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 # Handle CORS origins with fallback
 origins_env = os.getenv("ALLOWED_ORIGINS", "")

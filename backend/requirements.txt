@@ -8,4 +8,6 @@ psycopg2-binary==2.9.9
 sqlalchemy==2.0.36
 alembic==1.13.3
 pydantic==2.9.2
+email-validator==2.1.1
+google-generativeai==0.8.3
 mangum==0.19.0
