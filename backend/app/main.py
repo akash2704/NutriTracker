@@ -34,12 +34,12 @@ app.include_router(dashboard.router)
 app.include_router(profile.router)
 app.include_router(recipe.router)
 app.include_router(recommendations.router)
-# AWS Lambda handler (for serverless deployment)
+# Vercel serverless handler
 try:
     from mangum import Mangum
-    handler = Mangum(app)
+    handler = Mangum(app, lifespan="off")
 except ImportError:
-    # mangum not installed, skip Lambda handler
+    # mangum not installed, skip handler
     pass
 
 # In the future, you will add more routers here:
