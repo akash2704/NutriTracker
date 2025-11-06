@@ -16,7 +16,13 @@ app = FastAPI(
     version="0.1.0"
 )
 
-origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+# Handle CORS origins with fallback
+origins_env = os.getenv("ALLOWED_ORIGINS", "")
+if origins_env:
+    origins = origins_env.split(",")
+else:
+    origins = ["*"]  # Fallback for development
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -34,13 +40,9 @@ app.include_router(dashboard.router)
 app.include_router(profile.router)
 app.include_router(recipe.router)
 app.include_router(recommendations.router)
-# Vercel serverless handler
-try:
-    from mangum import Mangum
-    handler = Mangum(app, lifespan="off")
-except ImportError:
-    # mangum not installed, skip handler
-    pass
+# AWS Lambda handler
+from mangum import Mangum
+handler = Mangum(app)
 
 # In the future, you will add more routers here:
 # from .routers import users, auth

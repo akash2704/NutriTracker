@@ -1,0 +1,13 @@
+DATABASE_URL = "postgresql://postgres:Aka!270402@nutritrack.c1imk48s0cj6.ap-south-1.rds.amazonaws.com:5432/nutritrack"
+
+
+SECRET_KEY="7e7185bfe3bee98210ec1c60884a22ff4992ab8de3bba8097bd941f83341fafd"
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+GEMINI_API_KEY=AIzaSyDRd2KVXlwzVr4XJvBxGUjpZ4RxKuPhF9c
+# SMTP Configuration (optional - for email verification)
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=akashkallai27@gmail.com
+SMTP_PASSWORD=iycj qgcd wwxv lvrq
+FROM_EMAIL=akashkallai27@gmail.com
+ALLOWED_ORIGINS=https://nutri-tracker-rust.vercel.app/
