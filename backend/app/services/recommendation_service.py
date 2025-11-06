@@ -13,7 +13,7 @@ class RecommendationService:
         if not api_key:
             raise ValueError("GEMINI_API_KEY not found in environment variables")
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
     
     def calculate_bmr(self, weight_kg: float, height_cm: float, age: int, gender: str) -> float:
         """Calculate Basal Metabolic Rate using Mifflin-St Jeor Equation"""
