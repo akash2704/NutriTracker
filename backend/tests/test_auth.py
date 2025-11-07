@@ -11,10 +11,12 @@ def test_register_user(client: TestClient, test_user_data):
     }
     
     response = client.post("/auth/register", json=user_data)
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
-    assert "message" in data
-    assert "registered" in data["message"].lower()
+    # Check actual response format
+    assert "user" in data
+    assert "otp" in data
+    assert data["user"]["email"] == test_user_data["email"]
 
 def test_register_duplicate_user(client: TestClient, test_user_data):
     """Test duplicate user registration"""
