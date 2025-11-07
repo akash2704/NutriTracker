@@ -34,14 +34,7 @@ jobs:
         ACCESS_TOKEN_EXPIRE_MINUTES: 30
       run: |
         cd backend
-        PYTHONPATH=. uv run pytest tests/ -v --cov=app --cov-report=xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./backend/coverage.xml
-        flags: backend
-        token: ${{ secrets.CODECOV_TOKEN }}
+        PYTHONPATH=. uv run pytest tests/ -v
 
   frontend-build:
     runs-on: ubuntu-latest
