@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { logAPI } from '../services/api';
-import { Calendar, TrendingUp, TrendingDown, Minus, Target, Zap } from 'lucide-react';
+import { Calendar, TrendingUp, TrendingDown, Minus, Target, Zap, Utensils } from 'lucide-react';
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
+  const [foodLogs, setFoodLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     fetchDashboard();
+    fetchFoodLogs();
   }, [selectedDate]);
 
   const fetchDashboard = async () => {
@@ -20,6 +22,15 @@ const Dashboard = () => {
       console.error('Failed to fetch dashboard:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFoodLogs = async () => {
+    try {
+      const response = await logAPI.getFoodLogs(selectedDate);
+      setFoodLogs(response.data);
+    } catch (error) {
+      console.error('Failed to fetch food logs:', error);
     }
   };
 
@@ -214,6 +225,31 @@ const Dashboard = () => {
           <div className="card">
             <h3 className="text-base sm:text-lg font-semibold mb-2">Profile</h3>
             <p className="text-sm sm:text-base text-gray-600">{dashboardData.matched_demographic_group}</p>
+          </div>
+
+          {/* Food Logs Section */}
+          <div className="card">
+            <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center">
+              <Utensils size={20} className="mr-2" />
+              Today's Meals
+            </h3>
+            {foodLogs.length > 0 ? (
+              <div className="space-y-3">
+                {foodLogs.map((log) => (
+                  <div key={log.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="font-medium text-sm">{log.food_name}</div>
+                      <div className="text-xs text-gray-600">{log.meal_type} • {log.quantity_grams}g</div>
+                    </div>
+                    <div className="text-sm font-semibold text-primary-600">
+                      {log.calories} kcal
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-4">No meals logged for this date</p>
+            )}
           </div>
         </>
       ) : (

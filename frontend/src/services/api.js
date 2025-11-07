@@ -37,6 +37,7 @@ export const foodAPI = {
 export const logAPI = {
   createLog: (data) => api.post('/food-logs/', data),
   getDashboard: (date) => api.get(`/dashboard/?log_date=${date}`),
+  getFoodLogs: (date) => api.get(`/food-logs/?log_date=${date}`),
 };
 
 export default api;
