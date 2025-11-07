@@ -1,80 +1,120 @@
-# NutriTracker - Indian Nutrition & Fitness Tracker
+# NutriTracker - AI-Powered Indian Nutrition & Fitness Tracker
 
-A comprehensive nutrition tracking application built with FastAPI and React, featuring personalized weight loss recommendations powered by AI.
+> **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutritracker-frontend.vercel.app)  
+> **API Docs**: [https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod/docs](https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod/docs)
 
-## 🌟 Features
+A comprehensive nutrition tracking application built with FastAPI and React, featuring personalized weight loss recommendations powered by Google Gemini AI.
 
-### Core Functionality
-- **Food Database**: 50,000+ Indian foods from IFCT 2017 and INDB 2024
-- **Nutrition Tracking**: Log meals with accurate macro and micronutrient data
-- **Recipe Parser**: Extract ingredients and nutrition from recipe text/PDFs
-- **Dashboard Analytics**: Visual insights into daily nutrition intake
-- **User Profiles**: Complete health and dietary preference management
+## 🎯 Project Story
 
-### AI-Powered Recommendations
-- **Personalized Diet Plans**: AI-generated meal plans using Gemini API
-- **Weight Loss Goals**: Calculated BMR, TDEE, and calorie targets
-- **Dietary Preferences**: Vegetarian, non-vegetarian, and vegan options
-- **Budget-Aware**: Recommendations based on low, medium, high budgets
-- **Cuisine Preferences**: Indian, continental, or mixed cuisine options
+As a developer passionate about health and technology, I noticed a significant gap in nutrition tracking for Indian foods. Most existing apps focus on Western diets, leaving millions of Indians without accurate nutritional data for their traditional meals.
 
-### User Management
-- **Secure Authentication**: JWT-based login with email verification
-- **Profile Management**: Height, weight, activity level, dietary preferences
-- **Progress Tracking**: BMI calculation and goal monitoring
+**The Problem**: 
+- Existing nutrition apps lack comprehensive Indian food databases
+- Generic calorie calculators don't account for Indian cooking methods
+- No AI-powered recommendations tailored to Indian dietary preferences and budgets
 
-## 🛠️ Tech Stack
+**My Solution**:
+Built NutriTracker using official Indian government nutrition databases (IFCT 2017 & INDB 2024) with 50,000+ Indian foods, integrated with Google Gemini AI for personalized recommendations that understand Indian cuisine, dietary preferences, and budget constraints.
 
-### Backend
-- **FastAPI**: Modern Python web framework
-- **PostgreSQL**: Primary database
-- **SQLAlchemy**: ORM for database operations
-- **Alembic**: Database migrations
-- **Google Gemini AI**: Personalized recommendations
-- **JWT**: Secure authentication
-- **Pydantic**: Data validation
+**Why This Matters**:
+- **Accuracy**: Uses official Indian nutrition data, not estimates
+- **Cultural Relevance**: Understands Indian cooking methods and ingredients  
+- **AI-Powered**: Personalized recommendations based on individual health metrics
+- **Accessibility**: Works across different budget ranges and dietary preferences
 
-### Frontend
-- **React**: Modern UI framework
-- **Tailwind CSS**: Utility-first styling
-- **React Router**: Client-side routing
-- **Lucide Icons**: Beautiful icons
-- **React Hook Form**: Form management
+## 🌟 Key Features
 
-## 📋 Prerequisites
+### 🍛 Comprehensive Indian Food Database
+- **50,000+ Indian foods** from IFCT 2017 and INDB 2024
+- Accurate macro and micronutrient data for traditional Indian dishes
+- Regional cuisine coverage (North, South, East, West Indian foods)
 
+### 🤖 AI-Powered Personalization
+- **Google Gemini AI** integration for intelligent meal planning
+- Personalized recommendations based on BMR, TDEE, and health goals
+- Budget-aware suggestions (low, medium, high budget ranges)
+- Dietary preference support (vegetarian, non-vegetarian, vegan)
+
+### 📊 Smart Analytics Dashboard
+- Visual nutrition tracking with charts and progress indicators
+- Daily, weekly, and monthly nutrition insights
+- BMI calculation and health goal monitoring
+- Calorie deficit tracking for weight management
+
+### 🔍 Recipe Intelligence
+- **PDF recipe parser** - Upload recipe PDFs and get ingredient breakdown
+- Text recipe analysis with automatic nutrition calculation
+- Save and organize favorite recipes with nutritional data
+
+### 🛡️ Enterprise-Grade Security
+- JWT-based authentication with email verification
+- Rate limiting to prevent DDoS attacks and control API costs
+- Secure password hashing with bcrypt
+- CORS protection and input validation
+
+## 🏗️ Technical Architecture
+
+### Backend (FastAPI + PostgreSQL)
+```
+├── FastAPI Framework - High-performance async API
+├── PostgreSQL - Robust relational database
+├── SQLAlchemy ORM - Type-safe database operations
+├── Google Gemini AI - Intelligent recommendations
+├── JWT Authentication - Secure user sessions
+├── Rate Limiting - DDoS protection & cost control
+└── AWS Lambda - Serverless deployment
+```
+
+### Frontend (React + Tailwind)
+```
+├── React 18 - Modern UI framework
+├── Tailwind CSS - Utility-first styling
+├── React Router - Client-side navigation
+├── Context API - State management
+├── React Hook Form - Form validation
+└── Lucide Icons - Beautiful iconography
+```
+
+### Infrastructure & Deployment
+```
+├── AWS Lambda - Serverless backend hosting
+├── AWS API Gateway - API management & routing
+├── Vercel - Frontend hosting & CDN
+├── PostgreSQL - Database hosting
+└── GitHub Actions - CI/CD pipeline
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
 - Python 3.12+
 - Node.js 18+
 - PostgreSQL 14+
-- UV package manager
 - Google Gemini API key
 
-## 🚀 Installation
-
-### 1. Clone Repository
+### 1. Clone & Setup
 ```bash
-git clone <repository-url>
-cd fitness-tracker
+git clone https://github.com/akash2704/NutriTracker.git
+cd NutriTracker
 ```
 
 ### 2. Backend Setup
 ```bash
 cd backend
 
-# Install dependencies
+# Install dependencies with UV
 uv sync
 
-# Set up environment variables
+# Environment setup
 cp .env.example .env
-# Edit .env with your database URL, secret key, and Gemini API key
+# Add your DATABASE_URL, SECRET_KEY, and GEMINI_API_KEY
 
-# Run database migrations
+# Database setup
 uv run alembic upgrade head
+uv run python seed.py  # Load 50K+ Indian foods
 
-# Seed database with food data
-uv run python seed.py
-
-# Start development server
+# Start server
 uv run uvicorn app.main:app --reload
 ```
 
@@ -90,124 +130,87 @@ npm run dev
 ```
 
 ### 4. Environment Variables
-
-Create `backend/.env`:
 ```env
-DATABASE_URL=postgresql://username:password@localhost:5432/nutrition_db
-SECRET_KEY=your-secret-key-here
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+# Backend (.env)
+DATABASE_URL=postgresql://user:pass@localhost:5432/nutritracker
+SECRET_KEY=your-super-secret-key
 GEMINI_API_KEY=your-gemini-api-key
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # Optional: Email configuration
 SMTP_SERVER=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USERNAME=your-email@gmail.com
 SMTP_PASSWORD=your-app-password
-FROM_EMAIL=your-email@gmail.com
 ```
 
-## 🗄️ Database Setup
+## 📱 Usage Guide
 
-### PostgreSQL Setup
-```sql
-CREATE DATABASE nutrition_db;
-CREATE USER nutrition_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE nutrition_db TO nutrition_user;
-```
+### 1. **User Registration & Profile Setup**
+- Sign up with email verification
+- Complete health profile (age, height, weight, activity level)
+- Set dietary preferences and budget range
 
-### Migration Commands
-```bash
-# Create new migration
-uv run alembic revision --autogenerate -m "Description"
-
-# Apply migrations
-uv run alembic upgrade head
-
-# Rollback migration
-uv run alembic downgrade -1
-```
-
-## 🔑 API Endpoints
-
-### Authentication
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User login
-- `POST /auth/verify-otp` - Email verification
-
-### User Management
-- `GET /users/me` - Get current user
-- `GET /profile/me` - Get user profile
-- `POST /profile/me` - Create/update profile
-
-### Food & Nutrition
-- `GET /foods/` - Search foods
-- `GET /foods/{id}` - Get food details
-- `POST /food-log/` - Log food intake
-- `GET /dashboard/` - Get nutrition dashboard
-
-### AI Recommendations
-- `GET /recommendations/` - Get personalized recommendations
-
-### Recipe Processing
-- `POST /recipe/parse` - Parse recipe text/PDF
-
-## 📱 Usage
-
-### 1. User Registration
-- Sign up with email and password
-- Verify email with OTP
-- Complete profile with health metrics
-
-### 2. Profile Setup
-- Enter birth date, gender, height, weight
-- Set activity level and dietary preferences
-- Choose budget range and cuisine preferences
-
-### 3. Food Logging
+### 2. **Food Logging & Tracking**
 - Search from 50,000+ Indian foods
-- Log meals with quantities
-- Track macros and micronutrients
+- Log meals with accurate portions
+- Track daily macro and micronutrient intake
 
-### 4. Recipe Processing
-- Upload recipe PDFs or paste text
-- Get ingredient breakdown with nutrition
-- Save recipes for future reference
+### 3. **AI-Powered Recommendations**
+- Get personalized meal plans based on your profile
+- Receive calorie targets for healthy weight management
+- Follow exercise suggestions tailored to your fitness level
 
-### 5. AI Recommendations
-- Get personalized meal plans
-- View calorie targets for weight loss
-- Follow exercise suggestions
+### 4. **Recipe Analysis**
+- Upload recipe PDFs or paste recipe text
+- Get automatic ingredient breakdown with nutrition facts
+- Save recipes for future meal planning
 
-## 🏗️ Project Structure
+### 5. **Progress Monitoring**
+- View nutrition dashboard with visual insights
+- Track BMI changes and goal progress
+- Monitor daily calorie intake vs targets
 
+## 🔧 API Documentation
+
+### Core Endpoints
+
+#### Authentication
+```http
+POST /auth/register     # User registration
+POST /auth/login        # User login
+POST /auth/verify-otp   # Email verification
 ```
-fitness-tracker/
-├── backend/
-│   ├── app/
-│   │   ├── models.py          # Database models
-│   │   ├── schemas/           # Pydantic schemas
-│   │   ├── routers/           # API endpoints
-│   │   ├── services/          # Business logic
-│   │   └── dependencies.py    # Auth dependencies
-│   ├── alembic/              # Database migrations
-│   ├── data/                 # Food database files
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── components/       # Reusable components
-│   │   ├── pages/           # Page components
-│   │   ├── context/         # React context
-│   │   └── services/        # API services
-│   └── package.json
-└── README.md
+
+#### Food & Nutrition
+```http
+GET  /foods/            # Search Indian foods
+GET  /foods/{id}        # Get food details
+POST /food-log/         # Log food intake
+GET  /dashboard/        # Nutrition analytics
 ```
+
+#### AI Recommendations
+```http
+GET  /recommendations/  # Get personalized meal plans
+```
+
+#### Recipe Processing
+```http
+POST /recipe/parse      # Parse recipe text/PDF
+```
+
+### Rate Limiting
+- **60 requests per minute** per IP address
+- Prevents DDoS attacks and controls API costs
+- Returns `429 Too Many Requests` when exceeded
 
 ## 🧪 Testing
 
 ### Backend Tests
 ```bash
 cd backend
-uv run pytest
+uv run pytest tests/ -v
 ```
 
 ### Frontend Tests
@@ -216,26 +219,79 @@ cd frontend
 npm test
 ```
 
+### API Testing
+```bash
+# Test API endpoints
+curl -X GET "https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod/foods/?search=rice"
+```
+
 ## 🚀 Deployment
 
-### Backend (Railway/Heroku)
-1. Set environment variables
-2. Configure PostgreSQL database
-3. Run migrations: `alembic upgrade head`
-4. Deploy with: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+### Backend (AWS Lambda)
+```bash
+# Deploy to AWS Lambda
+cd backend
+zip -r nutritracker-backend.zip . -x "*.git*" "*.pytest_cache*" "__pycache__*"
+# Upload to AWS Lambda with lambda_handler.handler
+```
 
-### Frontend (Vercel/Netlify)
-1. Build: `npm run build`
-2. Deploy `dist/` folder
-3. Configure API base URL
+### Frontend (Vercel)
+```bash
+# Deploy to Vercel
+cd frontend
+npm run build
+vercel --prod
+```
+
+### Environment Setup
+- Set `GEMINI_API_KEY` in Lambda environment variables
+- Configure `DATABASE_URL` for production database
+- Update CORS origins in production
 
 ## 🤝 Contributing
 
+### Development Workflow
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
+3. Make changes with proper testing
+4. Commit: `git commit -m 'Add amazing feature'`
+5. Push: `git push origin feature/amazing-feature`
+6. Open Pull Request
+
+### Code Standards
+- **Backend**: Follow PEP 8, use type hints, write docstrings
+- **Frontend**: Use ESLint, Prettier, and component-based architecture
+- **Testing**: Maintain >80% code coverage
+- **Documentation**: Update README for new features
+
+## 📊 Project Metrics
+
+- **50,000+** Indian foods in database
+- **15+** API endpoints
+- **JWT** secure authentication
+- **Rate limited** to 60 req/min
+- **Responsive** design for all devices
+- **AI-powered** personalized recommendations
+
+## 🛣️ Roadmap
+
+### Phase 1 (Current)
+- ✅ Core nutrition tracking
+- ✅ AI recommendations
+- ✅ Recipe parsing
+- ✅ User authentication
+
+### Phase 2 (Next)
+- [ ] Mobile app (React Native)
+- [ ] Barcode scanning for packaged foods
+- [ ] Meal planning calendar
+- [ ] Social features & community
+
+### Phase 3 (Future)
+- [ ] Integration with fitness trackers
+- [ ] Multi-language support (Hindi, Tamil, etc.)
+- [ ] Offline mode capability
+- [ ] Advanced analytics & insights
 
 ## 📄 License
 
@@ -243,65 +299,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **IFCT 2017**: Indian Food Composition Tables
-- **INDB 2024**: Indian Nutrient Database
-- **Google Gemini AI**: Personalized recommendations
-- **Unsplash**: Food imagery
-- **React & FastAPI Communities**: Amazing frameworks
+- **IFCT 2017** - Indian Food Composition Tables by National Institute of Nutrition
+- **INDB 2024** - Indian Nutrient Database for comprehensive food data
+- **Google Gemini AI** - Powering intelligent recommendations
+- **FastAPI & React Communities** - For excellent frameworks and documentation
 
-## 📞 Support
+## 📞 Contact & Support
 
-For support, email support@nutritracker.com or create an issue on GitHub.
-
-## 🔮 Roadmap
-
-- [ ] Mobile app (React Native)
-- [ ] Barcode scanning
-- [ ] Meal planning calendar
-- [ ] Social features & sharing
-- [ ] Integration with fitness trackers
-- [ ] Multi-language support
-- [ ] Offline mode
+- **Developer**: Akash Kallai
+- **Email**: akashkallai@example.com
+- **GitHub**: [@akash2704](https://github.com/akash2704)
+- **Issues**: [GitHub Issues](https://github.com/akash2704/NutriTracker/issues)
 
 ---
 
 **Built with ❤️ for healthier living in India**
 
-## 🐳 Docker Deployment
-
-### Quick Start with Docker
-```bash
-# Clone and start all services
-git clone https://github.com/akash2704/NutriTracker.git
-cd NutriTracker
-./deploy.sh
-```
-
-**Access Points:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
-
-### Manual Docker Commands
-```bash
-# Development environment
-docker-compose up --build
-
-# Production environment
-docker-compose -f docker-compose.prod.yml up --build
-
-# Stop services
-docker-compose down
-```
-
-### Render Deployment
-**Important**: Render's free tier doesn't support Docker Compose. Deploy services separately:
-
-1. **Backend**: Deploy as Web Service (connect GitHub repo, set build command: `cd backend && pip install -r requirements.txt`)
-2. **Frontend**: Deploy as Static Site (build command: `cd frontend && npm install && npm run build`)
-3. **Database**: Add PostgreSQL database service
-
-**Alternative platforms supporting Docker Compose:**
-- Railway (recommended for full-stack apps)
-- DigitalOcean App Platform
-- AWS ECS/Fargate
+> *"Technology should make healthy living accessible to everyone, regardless of their cultural background or economic status."* - Project Philosophy
