@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import date
 
 from .. import schemas, models, services
 from ..database import get_db
@@ -37,3 +38,12 @@ def create_log(
         log_in=log_in, 
         user_id=current_user.id
     )
+
+@router.get("/", response_model=List[schemas.FoodLogResponse])
+def get_food_logs(
+    log_date: date | None = None,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """Get food logs for a specific date or today"""
+    return services.get_food_logs(db=db, user_id=current_user.id, log_date=log_date)

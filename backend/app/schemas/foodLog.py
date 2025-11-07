@@ -36,6 +36,15 @@ class Log(LogBase):
     
     # This tells Pydantic to read the data even if it's
     # a SQLAlchemy model object (not just a dict).
-    class ConfigDict:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+# 5. Food Log Response Schema for dashboard display
+class FoodLogResponse(BaseModel):
+    id: int
+    food_name: str
+    quantity_grams: float
+    meal_type: str
+    calories: float
+    
+    model_config = ConfigDict(from_attributes=True)
 

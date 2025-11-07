@@ -15,7 +15,8 @@ from .auth_service import (
     get_user_by_email,
     authenticate_user)
 from .foodLog_service import (
-    create_log_entry
+    create_log_entry,
+    get_food_logs
 )
 
 from .dashboard_service import get_dashboard_data
@@ -36,6 +37,7 @@ __all__ = [
     "get_user_by_email",
     "authenticate_user",
     "create_log_entry",
+    "get_food_logs",
     "get_dashboard_data", # <-- THIS COMMA WAS MISSING
     "create_or_update_profile",
     "get_profile"
