@@ -24,7 +24,6 @@ Since the hosted API docs are currently unavailable, here's the complete API ref
 
 ### Base URL
 ```
-Production: https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod
 Development: http://localhost:8000
 ```
 
