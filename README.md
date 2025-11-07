@@ -4,7 +4,7 @@
 [![Tests](https://github.com/akash2704/NutriTracker/workflows/Pull%20Request%20Checks/badge.svg)](https://github.com/akash2704/NutriTracker/actions)
 [![Coverage](https://codecov.io/gh/akash2704/NutriTracker/branch/master/graph/badge.svg)](https://codecov.io/gh/akash2704/NutriTracker)
 
-> **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutritracker-frontend.vercel.app)
+> **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutri-tracker-rust.vercel.app/dashboard)
 
 A comprehensive nutrition tracking application built with FastAPI and React, featuring personalized weight loss recommendations powered by Google Gemini AI.
 
