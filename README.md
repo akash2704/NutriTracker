@@ -1,27 +1,190 @@
 # NutriTracker - AI-Powered Indian Nutrition & Fitness Tracker
 
-> **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutritracker-frontend.vercel.app)  
-> **API Docs**: [https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod/docs](https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod/docs)
+> **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutritracker-frontend.vercel.app)
 
 A comprehensive nutrition tracking application built with FastAPI and React, featuring personalized weight loss recommendations powered by Google Gemini AI.
 
-## 🎯 Project Story
+## 🎯 Project Overview
 
-As a developer passionate about health and technology, I noticed a significant gap in nutrition tracking for Indian foods. Most existing apps focus on Western diets, leaving millions of Indians without accurate nutritional data for their traditional meals.
+**The Challenge**: 
+Most nutrition tracking applications focus on Western diets and lack comprehensive data for Indian foods, leaving a significant gap in the market for culturally relevant nutrition tracking.
 
-**The Problem**: 
-- Existing nutrition apps lack comprehensive Indian food databases
-- Generic calorie calculators don't account for Indian cooking methods
-- No AI-powered recommendations tailored to Indian dietary preferences and budgets
+**The Solution**:
+NutriTracker addresses this gap by utilizing official Indian government nutrition databases (IFCT 2017 & INDB 2024) containing 50,000+ Indian foods, combined with Google Gemini AI for intelligent, personalized recommendations.
 
-**My Solution**:
-Built NutriTracker using official Indian government nutrition databases (IFCT 2017 & INDB 2024) with 50,000+ Indian foods, integrated with Google Gemini AI for personalized recommendations that understand Indian cuisine, dietary preferences, and budget constraints.
+**Key Differentiators**:
+- **Accuracy**: Official Indian nutrition data from government sources
+- **Cultural Relevance**: Comprehensive Indian food database with regional cuisines
+- **AI Integration**: Personalized meal planning based on individual health metrics
+- **Scalability**: Built with modern tech stack for enterprise-grade performance
 
-**Why This Matters**:
-- **Accuracy**: Uses official Indian nutrition data, not estimates
-- **Cultural Relevance**: Understands Indian cooking methods and ingredients  
-- **AI-Powered**: Personalized recommendations based on individual health metrics
-- **Accessibility**: Works across different budget ranges and dietary preferences
+## 📋 API Documentation
+
+Since the hosted API docs are currently unavailable, here's the complete API reference:
+
+### Base URL
+```
+Production: https://x3qavb8llb.execute-api.ap-south-1.amazonaws.com/Prod
+Development: http://localhost:8000
+```
+
+### Authentication Endpoints
+```http
+POST /auth/register
+Content-Type: application/json
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+Response: {"message": "User registered. Please verify your email."}
+
+POST /auth/login  
+Content-Type: application/json
+{
+  "username": "user@example.com",
+  "password": "securepassword"
+}
+Response: {"access_token": "jwt_token", "token_type": "bearer"}
+
+POST /auth/verify-otp
+Content-Type: application/json
+{
+  "email": "user@example.com",
+  "otp": "123456"
+}
+Response: {"message": "Email verified successfully"}
+```
+
+### User & Profile Endpoints
+```http
+GET /users/me
+Authorization: Bearer {jwt_token}
+Response: {"id": 1, "email": "user@example.com", "is_verified": true}
+
+GET /profile/me
+Authorization: Bearer {jwt_token}
+Response: {
+  "birth_date": "1990-01-01",
+  "gender": "male",
+  "height_cm": 175,
+  "weight_kg": 70,
+  "activity_level": "moderate"
+}
+
+POST /profile/me
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+{
+  "birth_date": "1990-01-01",
+  "gender": "male",
+  "height_cm": 175,
+  "weight_kg": 70,
+  "activity_level": "moderate",
+  "dietary_preference": "vegetarian",
+  "budget_range": "medium"
+}
+```
+
+### Food & Nutrition Endpoints
+```http
+GET /foods/?search={query}&limit=20
+Response: {
+  "foods": [
+    {
+      "id": 1,
+      "name": "Rice, raw",
+      "calories_per_100g": 345,
+      "protein_g": 6.8,
+      "carbs_g": 78.2,
+      "fat_g": 0.5
+    }
+  ]
+}
+
+GET /foods/{food_id}
+Response: {
+  "id": 1,
+  "name": "Rice, raw",
+  "calories_per_100g": 345,
+  "protein_g": 6.8,
+  "carbs_g": 78.2,
+  "fat_g": 0.5,
+  "fiber_g": 0.2,
+  "calcium_mg": 10
+}
+
+POST /food-log/
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+{
+  "food_id": 1,
+  "quantity_g": 100,
+  "meal_type": "breakfast"
+}
+Response: {"message": "Food logged successfully"}
+```
+
+### Dashboard & Analytics
+```http
+GET /dashboard/
+Authorization: Bearer {jwt_token}
+Response: {
+  "daily_nutrition": {
+    "calories": 1850,
+    "protein": 65,
+    "carbs": 230,
+    "fat": 62
+  },
+  "weekly_average": {...},
+  "goal_progress": {...}
+}
+```
+
+### AI Recommendations
+```http
+GET /recommendations/
+Authorization: Bearer {jwt_token}
+Response: {
+  "bmr": 1680,
+  "tdee": 2310,
+  "target_calories": 1810,
+  "bmi": 22.9,
+  "recommendations": {
+    "greeting": "Welcome to your personalized nutrition guide!",
+    "meal_plan": {
+      "breakfast": "Oats upma with vegetables - 450 calories",
+      "lunch": "Dal rice with mixed vegetables - 630 calories",
+      "dinner": "Roti with paneer curry - 540 calories",
+      "snack": "Mixed nuts and fruit - 180 calories"
+    },
+    "exercise_plan": [
+      "30-minute brisk walk daily",
+      "Strength training 3x per week"
+    ]
+  }
+}
+```
+
+### Recipe Processing
+```http
+POST /recipe/parse
+Authorization: Bearer {jwt_token}
+Content-Type: multipart/form-data
+file: recipe.pdf (or)
+Content-Type: application/json
+{
+  "recipe_text": "Ingredients: 1 cup rice, 2 cups water..."
+}
+Response: {
+  "ingredients": [...],
+  "total_nutrition": {...}
+}
+```
+
+### Rate Limiting
+- **Limit**: 60 requests per minute per IP address
+- **Response**: `429 Too Many Requests` when exceeded
+- **Headers**: `X-RateLimit-Remaining`, `X-RateLimit-Reset`
 
 ## 🌟 Key Features
 
