@@ -2,7 +2,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.database import Base
-from app.models import User, Food, FoodCategory, Profile, FoodLog  # Import all models
+from app.models import User, Food, FoodCategory, UserProfile, FoodLog  # Fix: UserProfile not Profile
 
 # Test database URL - SQLite for testing
 TEST_DATABASE_URL = "sqlite:///./test.db"
@@ -25,8 +25,8 @@ def create_test_database():
             
             # Add sample foods
             foods = [
-                Food(id=1, name="Rice", category_id=1, calories_per_100g=130, protein_g=2.7, carbs_g=28, fat_g=0.3),
-                Food(id=2, name="Wheat", category_id=1, calories_per_100g=340, protein_g=12, carbs_g=72, fat_g=2.5),
+                Food(id=1, name="Rice", category_id=1),
+                Food(id=2, name="Wheat", category_id=1),
             ]
             db.add_all(foods)
             db.commit()
