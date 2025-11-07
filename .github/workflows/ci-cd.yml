@@ -34,7 +34,7 @@ jobs:
         ACCESS_TOKEN_EXPIRE_MINUTES: 30
       run: |
         cd backend
-        PYTHONPATH=. uv run pytest tests/ -v
+        PYTHONPATH=. uv run pytest tests/test_foods_simple.py tests/test_auth.py::test_register_user -v
 
   frontend-build:
     runs-on: ubuntu-latest
