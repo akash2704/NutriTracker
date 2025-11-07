@@ -7,7 +7,7 @@ from app.services.recommendation_service import RecommendationService
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
 @router.get("/")
-async def get_recommendations(
+async def get_recommendations(  # Keep async here
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -32,6 +32,6 @@ async def get_recommendations(
     }
     
     service = RecommendationService()
-    recommendations = await service.generate_recommendations(profile_data)
+    recommendations = await service.generate_recommendations(profile_data)  # Now with await
     
     return recommendations
