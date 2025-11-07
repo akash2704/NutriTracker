@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://810h0rjn6d.execute-api.ap-south-1.amazonaws.com/prod';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -37,7 +37,7 @@ export const foodAPI = {
 export const logAPI = {
   createLog: (data) => api.post('/food-logs/', data),
   getDashboard: (date) => api.get(`/dashboard/?log_date=${date}`),
-  getFoodLogs: (date) => api.get(`/food-logs/?log_date=${date}`),
+  getFoodLogs: (date) => api.get(`/food-logs?log_date=${date}`),
 };
 
 export default api;
