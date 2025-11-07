@@ -1,6 +1,6 @@
 # NutriTracker - AI-Powered Indian Nutrition & Fitness Tracker
 
-> **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutritracker-frontend.vercel.app)
+> **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutri-tracker-rust.vercel.app/dashboard)
 
 A comprehensive nutrition tracking application built with FastAPI and React, featuring personalized weight loss recommendations powered by Google Gemini AI.
 
