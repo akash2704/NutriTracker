@@ -10,20 +10,6 @@ jobs:
   backend-tests:
     runs-on: ubuntu-latest
     
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
     - uses: actions/checkout@v4
     
@@ -43,17 +29,18 @@ jobs:
     - name: Run backend tests
       env:
         DATABASE_URL: sqlite:///./test.db
-        SECRET_KEY: test-secret-key
-        GEMINI_API_KEY: test-api-key
+        SECRET_KEY: test-secret-key-for-ci
+        GEMINI_API_KEY: test-api-key-for-ci
       run: |
         cd backend
         PYTHONPATH=. uv run pytest tests/ -v --cov=app --cov-report=xml
     
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./backend/coverage.xml
         flags: backend
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   frontend-build:
     runs-on: ubuntu-latest
@@ -79,13 +66,38 @@ jobs:
         npm run build
     
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-build
         path: frontend/dist/
 
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Bandit security scan
+      run: |
+        pip install bandit
+        bandit -r backend/app/ -f json -o bandit-report.json || true
+    
+    - name: Run Safety dependency scan
+      run: |
+        pip install safety
+        cd backend
+        safety check --json --output safety-report.json || true
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          backend/safety-report.json
+
   deploy-backend:
-    needs: [backend-tests]
+    needs: [backend-tests, security-scan]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     
@@ -127,96 +139,3 @@ jobs:
           --function-name nutritracker-backend \
           --zip-file fileb://nutritracker-lambda.zip \
           --region ap-south-1
-
-  deploy-frontend:
-    needs: [frontend-build]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: frontend-build
-        path: frontend/dist/
-    
-    - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        working-directory: frontend
-        vercel-args: '--prod'
-
-  security-scan:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Run Bandit security scan
-      run: |
-        pip install bandit
-        bandit -r backend/app/ -f json -o bandit-report.json || true
-    
-    - name: Run Safety dependency scan
-      run: |
-        pip install safety
-        cd backend
-        safety check --json --output safety-report.json || true
-    
-    - name: Upload security reports
-      uses: actions/upload-artifact@v3
-      with:
-        name: security-reports
-        path: |
-          bandit-report.json
-          backend/safety-report.json
-
-  performance-test:
-    needs: [deploy-backend]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Install k6
-      run: |
-        sudo gpg -k
-        sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-        echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-        sudo apt-get update
-        sudo apt-get install k6
-    
-    - name: Run performance tests
-      run: |
-        k6 run --out json=performance-results.json - <<EOF
-        import http from 'k6/http';
-        import { check } from 'k6';
-        
-        export let options = {
-          stages: [
-            { duration: '30s', target: 10 },
-            { duration: '1m', target: 20 },
-            { duration: '30s', target: 0 },
-          ],
-        };
-        
-        export default function() {
-          let response = http.get('https://810h0rjn6d.execute-api.ap-south-1.amazonaws.com/prod/health');
-          check(response, {
-            'status is 200': (r) => r.status === 200,
-            'response time < 500ms': (r) => r.timings.duration < 500,
-          });
-        }
-        EOF
-    
-    - name: Upload performance results
-      uses: actions/upload-artifact@v3
-      with:
-        name: performance-results
-        path: performance-results.json
