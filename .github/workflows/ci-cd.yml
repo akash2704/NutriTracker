@@ -31,6 +31,7 @@ jobs:
         DATABASE_URL: sqlite:///./test.db
         SECRET_KEY: test-secret-key-for-ci
         GEMINI_API_KEY: test-api-key-for-ci
+        ACCESS_TOKEN_EXPIRE_MINUTES: 30
       run: |
         cd backend
         PYTHONPATH=. uv run pytest tests/ -v --cov=app --cov-report=xml

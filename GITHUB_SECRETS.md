@@ -1,21 +1,23 @@
 # GitHub Secrets Setup
 
-## Required Secrets for CI/CD Pipeline
+## Required Environment Variables for Backend Testing
 
-### 🔧 **For Tests (Optional - uses defaults if not set)**
-```
-# These are optional - tests will use default values if not provided
-SECRET_KEY=your-test-secret-key
-GEMINI_API_KEY=your-test-gemini-key
-```
+### ✅ **No Secrets Required for Testing!**
 
-### ☁️ **For AWS Lambda Deployment (Required for production deployment)**
+The backend tests now work without any GitHub secrets. All required environment variables have default values:
+
+- `SECRET_KEY` → defaults to `"fallback-secret-key-for-testing"`
+- `ACCESS_TOKEN_EXPIRE_MINUTES` → defaults to `30`
+- `GEMINI_API_KEY` → defaults to `"test-api-key-for-ci"`
+- `DATABASE_URL` → uses SQLite for testing
+
+### ☁️ **For AWS Lambda Deployment (Optional)**
 ```
 AWS_ACCESS_KEY_ID=your-aws-access-key
 AWS_SECRET_ACCESS_KEY=your-aws-secret-key
 ```
 
-### 🚀 **For Vercel Deployment (Required for frontend deployment)**
+### 🚀 **For Vercel Deployment (Optional)**
 ```
 VERCEL_TOKEN=your-vercel-token
 VERCEL_ORG_ID=your-vercel-org-id
@@ -27,45 +29,24 @@ VERCEL_PROJECT_ID=your-vercel-project-id
 CODECOV_TOKEN=your-codecov-token
 ```
 
-## How to Add Secrets
+## Current Pipeline Status
+
+**Without any secrets:**
+- ✅ Backend tests run successfully
+- ✅ Security scans work
+- ✅ Frontend builds
+- ❌ Deployment steps are skipped
+
+**With deployment secrets:**
+- ✅ All of the above
+- ✅ Automatic deployment to AWS Lambda
+- ✅ Automatic deployment to Vercel
+
+## How to Add Secrets (Optional)
 
 1. Go to your GitHub repository
 2. Click **Settings** → **Secrets and variables** → **Actions**
 3. Click **New repository secret**
 4. Add each secret with the name and value
 
-## Getting the Values
-
-### AWS Credentials
-1. Go to AWS IAM Console
-2. Create a user with Lambda deployment permissions
-3. Generate access keys
-
-### Vercel Credentials
-1. Go to Vercel Dashboard → Settings → Tokens
-2. Create a new token
-3. Get Org ID and Project ID from project settings
-
-### Codecov Token
-1. Go to codecov.io
-2. Connect your GitHub repository
-3. Get the upload token
-
-## Minimal Setup (Tests Only)
-
-**For just running tests without deployment, you don't need any secrets!**
-
-The pipeline will:
-- ✅ Run all backend tests with SQLite
-- ✅ Run security scans
-- ✅ Build frontend
-- ❌ Skip deployment steps (no secrets = no deployment)
-
-## Production Setup
-
-Add all secrets above for full CI/CD with:
-- ✅ Automated testing
-- ✅ Security scanning  
-- ✅ AWS Lambda deployment
-- ✅ Vercel frontend deployment
-- ✅ Coverage reporting
+**The pipeline works perfectly without any secrets for testing and CI purposes!**

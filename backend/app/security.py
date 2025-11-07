@@ -7,10 +7,10 @@ from jose import JWTError, jwt
 from . import schemas # We'll need this for the token payload
 from dotenv import load_dotenv
 load_dotenv()
-# --- LOAD FROM .ENV ---
-SECRET_KEY = os.environ["SECRET_KEY"]
+# --- LOAD FROM .ENV WITH DEFAULTS ---
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key-for-testing")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 
 def hash_password(password: str) -> str:
