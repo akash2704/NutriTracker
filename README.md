@@ -1,5 +1,9 @@
 # NutriTracker - AI-Powered Indian Nutrition & Fitness Tracker
 
+[![CI/CD Pipeline](https://github.com/akash2704/NutriTracker/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/akash2704/NutriTracker/actions)
+[![Tests](https://github.com/akash2704/NutriTracker/workflows/Pull%20Request%20Checks/badge.svg)](https://github.com/akash2704/NutriTracker/actions)
+[![Coverage](https://codecov.io/gh/akash2704/NutriTracker/branch/master/graph/badge.svg)](https://codecov.io/gh/akash2704/NutriTracker)
+
 > **Live Demo**: [https://nutritracker-frontend.vercel.app](https://nutritracker-frontend.vercel.app)
 
 A comprehensive nutrition tracking application built with FastAPI and React, featuring personalized weight loss recommendations powered by Google Gemini AI.

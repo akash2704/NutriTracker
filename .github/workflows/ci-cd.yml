@@ -1,0 +1,222 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        uv sync
+    
+    - name: Run backend tests
+      env:
+        DATABASE_URL: sqlite:///./test.db
+        SECRET_KEY: test-secret-key
+        GEMINI_API_KEY: test-api-key
+      run: |
+        cd backend
+        PYTHONPATH=. uv run pytest tests/ -v --cov=app --cov-report=xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/coverage.xml
+        flags: backend
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend-build
+        path: frontend/dist/
+
+  deploy-backend:
+    needs: [backend-tests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+    
+    - name: Create deployment package
+      run: |
+        cd backend
+        mkdir -p lambda-package
+        cp -r app lambda-package/
+        cp lambda_handler.py lambda-package/
+        cp requirements.txt lambda-package/
+        cd lambda-package
+        pip install -r requirements.txt -t .
+        zip -r ../nutritracker-lambda.zip . -x "*.pyc" "*__pycache__*"
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
+    
+    - name: Deploy to AWS Lambda
+      run: |
+        cd backend
+        aws lambda update-function-code \
+          --function-name nutritracker-backend \
+          --zip-file fileb://nutritracker-lambda.zip \
+          --region ap-south-1
+
+  deploy-frontend:
+    needs: [frontend-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: frontend-build
+        path: frontend/dist/
+    
+    - name: Deploy to Vercel
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
+        vercel-args: '--prod'
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Bandit security scan
+      run: |
+        pip install bandit
+        bandit -r backend/app/ -f json -o bandit-report.json || true
+    
+    - name: Run Safety dependency scan
+      run: |
+        pip install safety
+        cd backend
+        safety check --json --output safety-report.json || true
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          backend/safety-report.json
+
+  performance-test:
+    needs: [deploy-backend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install k6
+      run: |
+        sudo gpg -k
+        sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+    
+    - name: Run performance tests
+      run: |
+        k6 run --out json=performance-results.json - <<EOF
+        import http from 'k6/http';
+        import { check } from 'k6';
+        
+        export let options = {
+          stages: [
+            { duration: '30s', target: 10 },
+            { duration: '1m', target: 20 },
+            { duration: '30s', target: 0 },
+          ],
+        };
+        
+        export default function() {
+          let response = http.get('https://810h0rjn6d.execute-api.ap-south-1.amazonaws.com/prod/health');
+          check(response, {
+            'status is 200': (r) => r.status === 200,
+            'response time < 500ms': (r) => r.timings.duration < 500,
+          });
+        }
+        EOF
+    
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: performance-results.json

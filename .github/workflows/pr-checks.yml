@@ -1,0 +1,86 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install Python linting tools
+      run: |
+        pip install black flake8 isort
+    
+    - name: Run Black formatter check
+      run: |
+        cd backend
+        black --check --diff app/
+    
+    - name: Run Flake8 linting
+      run: |
+        cd backend
+        flake8 app/ --max-line-length=88 --extend-ignore=E203,W503
+    
+    - name: Run isort import sorting check
+      run: |
+        cd backend
+        isort --check-only --diff app/
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Run ESLint
+      run: |
+        cd frontend
+        npm run lint
+
+  test-coverage:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        uv sync
+    
+    - name: Run tests with coverage
+      env:
+        DATABASE_URL: sqlite:///./test.db
+        SECRET_KEY: test-secret-key
+        GEMINI_API_KEY: test-api-key
+      run: |
+        cd backend
+        PYTHONPATH=. uv run pytest tests/ -v --cov=app --cov-report=term --cov-fail-under=70
+    
+    - name: Comment coverage on PR
+      uses: py-cov-action/python-coverage-comment-action@v3
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        MINIMUM_GREEN: 80
+        MINIMUM_ORANGE: 70
